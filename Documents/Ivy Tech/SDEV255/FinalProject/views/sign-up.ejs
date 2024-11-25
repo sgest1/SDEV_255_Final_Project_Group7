@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+<%- include('partials/_navbar.ejs') %>
+<section class="container">
+    <h1>Create an Account</h1>
+    <form action="/sign-up" method="post">
+        <label for="full-name">Full Name</label>
+        <input type="text" id="full-name" name="full_name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6">
+
+        <button type="submit" class="cta-button">Sign Up</button>
+    </form>
+</section>
+<%- include('partials/_footer.ejs') %>

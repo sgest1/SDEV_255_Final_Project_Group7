@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>College Courses</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <%- include('partials/_navbar.ejs') %>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Welcome to the Ivy Tech Courses Portal</h1>
+        <p>Manage your courses and profile!</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="card">
+            <h3>Sign Up for Courses</h3>
+            <p>Sign up for all your courses here easily!</p>
+            <a href="/view-courses" class="button">View Courses</a>
+        </div>
+        <div class="card">
+            <h3>Add Courses</h3>
+            <p>Add courses here!</p>
+            <a href="/add-course" class="button">Add a Course</a>
+        </div>
+    </div>
+    <%- include('partials/_footer.ejs') %>
+</body>
+</html>

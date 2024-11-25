@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+<%- include('partials/_navbar.ejs') %>
+    <div class="container">
+        <h1>Edit Course</h1>
+        
+        <!-- Form for editing the course -->
+        <form action="/courses/edit/<%= course.id %>" method="POST">
+            <label for="courseName">Course Name:</label>
+            <input type="text" id="courseName" name="courseName" value="<%= course.name %>" required>
+
+            <label for="courseDescription">Course Description:</label>
+            <textarea id="courseDescription" name="courseDescription" required><%= course.description %></textarea>
+
+            <label for="courseInstructor">Instructor:</label>
+            <input type="text" id="courseInstructor" name="courseInstructor" value="<%= course.instructor %>" required>
+
+            <label for="courseCredits">Credits:</label>
+            <input type="number" id="courseCredits" name="courseCredits" value="<%= course.credits %>" required>
+
+            <button type="submit">Update Course</button>
+        </form>
+    </div>
+<%- include('partials/_footer.ejs') %>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <%- include('partials/_navbar.ejs') %>
+
+    <div class="container">
+        <h1>View Courses</h1>
+    
+        <div class="course-list">
+            <% courses.forEach(course => { %>
+                <div class="course-item">
+                    <h3><%= course.name %></h3>
+                    <p><%= course.description %></p>
+                    <p>Instructor: <%= course.instructor %></p>
+                    <p>Credits: <%= course.credits %></p>
+    
+                    <!-- Edit Course Link -->
+                    <a href="/edit-course/<%= course.id %>" class="button">Edit</a>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <%- include('partials/_footer.ejs') %>
