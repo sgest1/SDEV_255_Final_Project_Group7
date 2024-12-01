@@ -19,17 +19,36 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Sign Up for Courses Card -->
         <div class="card">
             <h3>Sign Up for Courses</h3>
             <p>Sign up for all your courses here easily!</p>
             <a href="/view-courses" class="button">View Courses</a>
         </div>
+
+        <!-- Add Courses Card -->
         <div class="card">
             <h3>Add Courses</h3>
             <p>Add courses here!</p>
             <a href="/add-course" class="button">Add a Course</a>
         </div>
     </div>
+
+    <!-- Available Courses Section -->
+    <section class="available-courses">
+        <h2>Available Courses</h2>
+        <div class="course-list">
+            <% availableCourses.forEach(course => { %>
+                <div class="course-item">
+                    <h3><%= course.name %></h3>
+                    <p><%= course.description %></p>
+                    <p><strong>Instructor:</strong> <%= course.instructor %></p>
+                    <a href="/course/<%= course.id %>" class="button">View Details</a>
+                </div>
+            <% }) %>
+        </div>
+    </section>
+
     <%- include('partials/_footer.ejs') %>
 </body>
 </html>

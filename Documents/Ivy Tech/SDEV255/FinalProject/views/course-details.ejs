@@ -1,0 +1,25 @@
+<!-- course-details.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <%- include('partials/_navbar.ejs') %>
+
+    <div class="container">
+        <h1>Course Details: <%= course.name %></h1>
+        <div class="course-details">
+            <p><strong>Course ID:</strong> <%= course.id %></p>
+            <p><strong>Description:</strong> <%= course.description %></p>
+            <p><strong>Instructor:</strong> <%= course.instructor %></p>
+        </div>
+        <a href="/" class="button">Back to Home</a>
+    </div>
+
+    <%- include('partials/_footer.ejs') %>
+</body>
+</html>
