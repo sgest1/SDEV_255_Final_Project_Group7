@@ -18,9 +18,9 @@ mongoose.connect('mongodb://localhost:27017/courseAppDB', { useNewUrlParser: tru
 
 // User schema and model
 const userSchema = new mongoose.Schema({
-  username: String,
-  password: String,
-  role: String
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, required: true } // role could be 'student' or 'teacher'
 });
 
 const User = mongoose.model('User', userSchema);
@@ -38,7 +38,7 @@ let availableCourses = [
 
 // Set up session
 app.use(session({
-  secret: 'your-secret-key',
+  secret: 'your-secret-key', // Replace this with a more secure key in production
   resave: false,
   saveUninitialized: false
 }));
@@ -99,9 +99,33 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Sign-up page (optional)
+// Sign-up page
 app.get('/sign-up', (req, res) => {
   res.render('sign-up', { active: 'sign-up' });
+});
+
+// Handle sign-up form submission
+app.post('/sign-up', async (req, res) => {
+  const { username, password, role } = req.body;
+
+  // Check if the username already exists
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    return res.status(400).send('Username already taken');
+  }
+
+  // Hash the password before saving it to the database
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  // Create a new user
+  const newUser = new User({ username, password: hashedPassword, role });
+
+  try {
+    await newUser.save();
+    res.redirect('/login');  // Redirect to login page after successful registration
+  } catch (err) {
+    res.status(500).send('Error saving user');
+  }
 });
 
 // Handle adding a new course
@@ -174,4 +198,3 @@ app.use((req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
-
