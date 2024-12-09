@@ -1,10 +1,10 @@
 /* General Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; 
-    color: #3c3c3c; 
+    background-color: #f4f4f4;
+    color: #333333;
 }
 
 a {
@@ -12,59 +12,39 @@ a {
     color: inherit;
 }
 
-/* General Button Styles */
-.button {
-    display: inline-block;
-    background-color: #5c709a; 
-    color: #ffffff; 
-    padding: 6px 12px; 
-    border-radius: 5px;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 0.9em; 
-    text-align: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border: none;  
-    cursor: pointer;
-}
-
-.button:hover {
-    background-color: #0460e9; 
-    transform: translateY(-2px);
-}
-
 /* Navbar Styles */
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #5c709a; 
+    background-color: #007bff; /* Primary Blue */
     padding: 10px 20px;
 }
 
 .navbar-logo a {
     font-size: 1.8em;
-    color: #ffffff; 
+    color: #ffffff;
     font-weight: bold;
+    font-family: 'Roboto', sans-serif;
 }
 
 .navbar-links a {
     margin-left: 20px;
-    color: #ffffff; 
+    color: #ffffff;
     font-size: 1.1em;
     padding: 8px;
     transition: background-color 0.3s ease;
 }
 
 .navbar-links a:hover {
-    background-color: #0460e9; 
+    background-color: #ffc107; /* Yellow for hover effect */
     border-radius: 5px;
 }
 
 /* Hero Section */
 .hero {
-    background-color: #aaccb3; 
-    color: #3c3c3c; 
+    background-color: #ffc107; /* Yellow */
+    color: #333333;
     padding: 50px 20px;
     text-align: center;
 }
@@ -72,6 +52,7 @@ nav {
 .hero h1 {
     font-size: 2.5em;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 .hero p {
@@ -81,15 +62,14 @@ nav {
 
 /* Card Styles */
 .card {
-    background-color: #ffffff; 
-    border: 1px solid #e0e0e0; 
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 20px;
     margin: 20px;
-    text-align: left;
+    text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
 }
 
 .card:hover {
@@ -100,6 +80,7 @@ nav {
 .card h3 {
     font-size: 1.8em;
     margin-bottom: 10px;
+    font-family: 'Roboto', sans-serif;
 }
 
 .card p {
@@ -107,80 +88,35 @@ nav {
     margin-bottom: 20px;
 }
 
-/* Course Descriptions Styling */
-.card .course-description, .available-courses .course-card p {
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    color: #666;
-    background-color: #fafafa;
-    padding: 15px;
+.card .button {
+    background-color: #007bff; /* Primary Blue */
+    color: #ffffff;
+    padding: 10px 20px;
     border-radius: 5px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
-/* Edit and Delete Button Group */
-.card .button-group {
-    margin-top: 15px;
-    gap: 10px; 
-}
-
-/* Edit Button */
-.card .button-group .button.edit {
-    background-color: #0460e9;
-}
-
-.card .button-group .button.edit:hover {
-    background-color: #0346a8;
-}
-
-/* Delete Button */
-.card .button-group .button.delete {
-    background-color: #0460e9;
-}
-
-.card .button-group .button.delete:hover {
-    background-color: #0346a8;
-}
-
-/* Center Delete Button */
-.center-button {
-    display: flex;
-    justify-content: center; /* Centers the content horizontally */
-    margin-top: 15px; /* Adds spacing above the button */
-}
-
-.center-button .button {
-    /* Optional: Adjust the button width or margin if needed */
-    width: auto;
-}
-
-
-/* Course Item Styles */
-.course-item {
-    margin-bottom: 20px; 
-}
-
-/* Space between Course Info and Buttons */
-.course-item p {
-    margin-bottom: 10px; 
+.card .button:hover {
+    background-color: #dc3545; /* Red for hover effect */
 }
 
 /* Form Styles */
 form {
     background-color: #ffffff;
     padding: 30px;
-    border-radius: 0;
+    border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 600px;
-    margin: auto;
+    margin: 20px auto;
 }
 
 form label {
     font-size: 1.1em;
     margin-bottom: 10px;
     display: block;
+    font-family: 'Roboto', sans-serif;
 }
 
 form input, form textarea {
@@ -193,7 +129,7 @@ form input, form textarea {
 }
 
 form button {
-    background-color: #5c709a; 
+    background-color: #007bff; /* Primary Blue */
     color: #ffffff;
     padding: 10px 20px;
     border-radius: 5px;
@@ -205,12 +141,12 @@ form button {
 }
 
 form button:hover {
-    background-color: #0460e9; 
+    background-color: #dc3545; /* Red for hover effect */
 }
 
 /* Footer Styles */
 footer {
-    background-color: #3c3c3c; 
+    background-color: #333333;
     color: #ffffff;
     text-align: center;
     padding: 20px;
@@ -219,73 +155,14 @@ footer {
 
 footer p {
     font-size: 1em;
+    font-family: 'Open Sans', sans-serif;
 }
 
-/* Available Courses Section */
-.available-courses {
-    background-color: #f8f8f8; 
-    padding: 40px 20px;
-    text-align: center;
-}
-
-.available-courses h2 {
-    font-size: 2.2em;
-    color: #5c709a; 
-    margin-bottom: 20px;
-}
-
-.available-courses .course-card {
-    display: inline-block;
-    background-color: #ffffff; 
-    border: 1px solid #e0e0e0; 
-    border-radius: 8px;
-    padding: 20px;
-    width: 250px;
-    margin: 15px;
-    text-align: left;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.available-courses .course-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-}
-
-.available-courses .course-card h4 {
-    font-size: 1.5em;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.available-courses .course-card p {
+/* Error message styles */
+#errorMsg {
+    color: #dc3545; /* Red */
     font-size: 1.1em;
-    color: #666;
-    margin-bottom: 15px;
-    background-color: #fafafa;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-}
-
-.available-courses .course-card .button {
-    background-color: #5c709a; 
-    color: #ffffff; 
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1em;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    text-transform: uppercase;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.available-courses .course-card .button:hover {
-    background-color: #0460e9; 
+    margin-top: 10px;
 }
 
 /* Responsive Design */
@@ -302,12 +179,6 @@ footer p {
     .card {
         margin: 10px;
     }
-
-    .available-courses .course-card {
-        width: 100%;
-    }
-
-    .card .course-description, .available-courses .course-card p {
-        padding: 10px;
-    }
 }
+
+
