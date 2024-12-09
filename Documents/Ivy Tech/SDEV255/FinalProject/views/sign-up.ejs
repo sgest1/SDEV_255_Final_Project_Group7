@@ -4,20 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
+    <title><%= user ? 'Edit Profile' : 'Sign Up' %></title>
+</head>
+<body>
+
 <%- include('partials/_navbar.ejs') %>
+
 <section class="container">
-    <h1>Create an Account</h1>
-    <form action="/sign-up" method="post">
+    <!-- Conditional heading based on whether the user is logged in or not -->
+    <h1><%= user ? 'Edit Your Account' : 'Create an Account' %></h1>
+
+    <!-- Conditional form action and inputs based on whether the user is logged in -->
+    <form action="<%= user ? '/edit-profile' : '/sign-up' %>" method="POST">
+        <!-- Full Name -->
         <label for="full-name">Full Name</label>
-        <input type="text" id="full-name" name="full_name" required>
+        <input type="text" id="full-name" name="full_name" value="<%= user ? user.fullName : '' %>" required>
 
+        <!-- Email -->
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" value="<%= user ? user.email : '' %>" required>
 
+        <!-- Password -->
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required minlength="6">
+        <input type="password" id="password" name="password" <%= user ? '' : 'required' %> minlength="6">
 
-        <button type="submit" class="cta-button">Sign Up</button>
+        <!-- Confirm Password (only for sign-up) -->
+        <% if (!user) { %>
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm_password" required minlength="6">
+        <% } %>
+
+        <!-- Role (only for sign-up, this should be hidden for profile edit) -->
+        <% if (!user) { %>
+            <label for="role">Role</label>
+            <select name="role" id="role" required>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+            </select>
+        <% } %>
+
+        <!-- Submit Button -->
+        <button type="submit"><%= user ? 'Save Changes' : 'Sign Up' %></button>
     </form>
 </section>
+
 <%- include('partials/_footer.ejs') %>
+
+</body>
+</html>

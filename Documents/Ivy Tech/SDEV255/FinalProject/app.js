@@ -1,121 +1,342 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const flash = require('connect-flash');
 const app = express();
 const port = 3000;
+const User = require('./models/user');
+const Course = require('./models/course');
+
+// MongoDB Atlas URI 
+const dbURI = 'mongodb+srv://group7:group7@group7project.baaev.mongodb.net/?retryWrites=true&w=majority&appName=Group7Project';
 
 // Middleware
-app.set('view engine', 'ejs'); 
-app.use(express.static('public')); 
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  secret: 'yourSecretKey',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
-// Dummy data for courses
-let courses = [
-    { id: 'CS101', name: 'CS101', description: 'Offers a broad overview of computer science designed to provide students with an introduction to the field of computer science and an orientation to the Computer Science department and the computing environment at the university. Includes a project to introduce problem solving using computers. All computer science majors are required to take this course within their first year.', instructor: 'Prof. Brown' },
-    { id: 'MATH101', name: 'MATH101', description: 'Introductory college algebra course, covering fundamental mathematical concepts like basic arithmetic operations, exponents, algebraic expressions, solving linear equations and inequalities, graphing linear functions, and often includes an emphasis on practical applications of these skills in real-world scenarios; essentially providing a foundation for further mathematics studies.', instructor: 'Prof. Johnson' },
-    { id: 'ENG101', name: 'ENG101', description: 'Introductory college writing course that focuses on developing fundamental writing skills, including critical reading, the writing process (pre-writing, drafting, revising), and constructing well-organized essays with clear arguments, appropriate style, and proper grammar, preparing students for academic writing in other college courses.', instructor: 'Prof. Smith' },
-    { id: 'SDEV255', name: 'SDEV255', description: 'Focuses on teaching students how to build interactive web applications by utilizing both client-side and server-side scripting languages, including application programming interfaces (APIs), to create dynamic data-driven web interfaces, often involving technologies like HTML, JavaScript, and a database to store information; it builds upon foundational web development knowledge to implement full-stack web applications.', instructor: 'Prof. Hamby' }
-];
+// Global middleware to make 'user' available in all views
+app.use((req, res, next) => {
+  res.locals.user = req.user; 
+  next();
+});
 
-// Dummy data for available courses (this will be displayed on the homepage)
-let availableCourses = [
-    { id: 'CS101', name: 'CS101', description: 'Offers a broad overview of computer science designed to provide students with an introduction to the field of computer science and an orientation to the Computer Science department and the computing environment at the university. Includes a project to introduce problem solving using computers. All computer science majors are required to take this course within their first year.', instructor: 'Prof. Brown', credits: '' },
-    { id: 'SDEV255', name: 'SDEV255', description: 'Focuses on teaching students how to build interactive web applications by utilizing both client-side and server-side scripting languages, including application programming interfaces (APIs), to create dynamic data-driven web interfaces, often involving technologies like HTML, JavaScript, and a database to store information; it builds upon foundational web development knowledge to implement full-stack web applications.', instructor: 'Prof. Hamby' },
-    { id: 'MATH101', name: 'MATH101', description: 'Introductory college algebra course, covering fundamental mathematical concepts like basic arithmetic operations, exponents, algebraic expressions, solving linear equations and inequalities, graphing linear functions, and often includes an emphasis on practical applications of these skills in real-world scenarios; essentially providing a foundation for further mathematics studies.', instructor: 'Prof. Johnson' },
-    { id: 'ENG101', name: 'ENG101', description: 'Introductory college writing course that focuses on developing fundamental writing skills, including critical reading, the writing process (pre-writing, drafting, revising), and constructing well-organized essays with clear arguments, appropriate style, and proper grammar, preparing students for academic writing in other college courses.', instructor: 'Prof. Smith' }
-];
+// Connect to MongoDB Atlas
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
+
+// Define Course Schema
+const courseSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  instructor: { type: String, required: true },
+  credits: { type: Number, required: false },
+});
+
+// Configure passport
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+}, async (email, password, done) => {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return done(null, false, { message: 'Incorrect email.' });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return done(null, false, { message: 'Incorrect password.' });
+    }
+    return done(null, user);
+  } catch (err) {
+    return done(err);
+  }
+}));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
+
+function isTeacher(req, res, next) {
+  if (req.isAuthenticated()) {
+    console.log('User:', req.user); // Log user details
+    if (req.user.role === 'teacher') {
+      return next();
+    }
+    console.log('Unauthorized: Not a teacher');
+  } else {
+    console.log('Unauthorized: Not authenticated');
+  }
+  req.flash('error', 'You are not authorized to perform this action.');
+  res.redirect('/login');
+}
+
+function isStudent(req, res, next) {
+  if (req.isAuthenticated()) {
+    console.log('User:', req.user); // Log user details
+    if (req.user.role === 'student') {
+      return next();
+    }
+    console.log('Unauthorized: Not a student');
+  } else {
+    console.log('Unauthorized: Not authenticated');
+  }
+  res.redirect('/login');
+}
+
+
+// Middleware to check if the user is logged in
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    res.redirect('/login');
+  }
+}
 
 // Home page
-app.get('/', (req, res) => {
-    res.render('index', { active: 'home', availableCourses });
+app.get('/', isAuthenticated, async (req, res) => {
+  const availableCourses = await Course.find(); 
+  res.render('index', { active: 'home', availableCourses, user: req.user });
 });
+
+// Route to render available courses
+app.get('/available-courses', async (req, res) => {
+  try {
+    const availableCourses = await Course.find({});
+    res.render('available-courses', { availableCourses });
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).send('Error fetching available courses');
+  }
+});
+
+// View courses
+app.get('/view-courses', isAuthenticated, async (req, res) => {
+  try {
+    const courses = await Course.find({});
+    res.render('view-courses', { courses });
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).send('Error fetching courses');
+  }
+});
+
+// Route to view course details
+app.get('/course/:id', isAuthenticated, async (req, res) => {
+  const courseId = req.params.id;
+  try {
+    const course = await Course.findOne({ id: courseId });
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+    res.render('course-details', { course });
+  } catch (error) {
+    console.error(`Error fetching course with ID ${courseId}:`, error);
+    res.status(500).send('Error fetching course details');
+  }
+});
+
+// Route to render the edit course form
+app.get('/edit-course/:id', isTeacher, async (req, res) => {
+  const courseId = req.params.id;
+  try {
+    const course = await Course.findOne({ id: courseId });
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+    res.render('edit-course', { course });
+  } catch (error) {
+    console.error(`Error fetching course with ID ${courseId}:`, error);
+    res.status(500).send('Error fetching course details');
+  }
+});
+
+// Route to handle the course update
+app.post('/edit-course/:id', isTeacher, async (req, res) => {
+  const courseId = req.params.id;
+  const { name, description, instructor, credits } = req.body;
+  try {
+    const course = await Course.findOneAndUpdate(
+      { id: courseId },
+      { name, description, instructor, credits },
+      { new: true }
+    );
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+    res.redirect('/view-courses');
+  } catch (error) {
+    console.error(`Error updating course with ID ${courseId}:`, error);
+    res.status(500).send('Error updating course');
+  }
+});
+
+// Route to handle deleting a course
+app.post('/delete-course/:id', isTeacher, async (req, res) => {
+  const courseId = req.params.id;
+  try {
+    const course = await Course.findOneAndDelete({ id: courseId });
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+    res.redirect('/view-courses');
+  } catch (error) {
+    console.error(`Error deleting course with ID ${courseId}:`, error);
+    res.status(500).send('Error deleting course');
+  }
+});
+
+// Display student's enrolled courses
+app.get('/my-schedule', isStudent, async (req, res) => {
+  try {
+    const student = await User.findById(req.user.id).populate('courses');
+    res.render('my-schedule', { courses: student.courses });
+  } catch (error) {
+    console.error('Error fetching student schedule:', error);
+    req.flash('error', 'Error fetching your schedule. Please try again.');
+    res.redirect('/');
+  }
+});
+
+// Handle adding a new course (teachers) - Render form
+app.get('/add-course', isTeacher, (req, res) => {
+  res.render('add-course');
+});
+
+// Handle adding a new course (teachers) - Submit form
+app.post('/add-course', isTeacher, async (req, res) => {
+  const { course_id, course_name, description, instructor, credits } = req.body;
+  try {
+    const newCourse = new Course({
+      id: course_id,
+      name: course_name,
+      description,
+      instructor,
+      credits,
+    });
+    await newCourse.save();
+    req.flash('success', 'Course added successfully!');
+    res.redirect('/view-courses');
+  } catch (error) {
+    console.error('Error adding course:', error);
+    req.flash('error', 'Error adding course. Please try again.');
+    res.redirect('/add-course');
+  }
+});
+
+// Handle adding a course to a student's personal schedule
+app.post('/add-course/:id', isStudent, async (req, res) => {
+  const courseId = req.params.id;
+  try {
+    const course = await Course.findOne({ id: courseId });
+    if (!course) {
+      req.flash('error', 'Course not found.');
+      return res.redirect('/available-courses');
+    }
+
+    const student = await User.findById(req.user.id);
+    if (student.courses.includes(courseId)) {
+      req.flash('error', 'You are already enrolled in this course.');
+      return res.redirect('/available-courses');
+    }
+
+    student.courses.push(courseId);
+    await student.save();
+
+    req.flash('success', `Successfully added ${course.name} to your schedule.`);
+    res.redirect('/available-courses');
+  } catch (err) {
+    console.error(`Error adding course ${courseId}:`, err);
+    req.flash('error', 'Error adding course. Please try again.');
+    res.redirect('/available-courses');
+  }
+});
+
 
 // Sign-up page
 app.get('/sign-up', (req, res) => {
-    res.render('sign-up', { active: 'sign-up' });
+  res.render('sign-up', { active: 'sign-up', user: req.user, messages: req.flash('error') });
 });
 
-// View courses page
-app.get('/view-courses', (req, res) => {
-    res.render('view-courses', { active: 'view-courses', courses });
-});
-
-// Add course page
-app.get('/add-course', (req, res) => {
-    res.render('add-course', { active: 'add-course' });
-});
-
-// Handle adding a new course
-app.post('/add-course', (req, res) => {
-    const { course_id, course_name, description, instructor } = req.body;
-    if (course_id && course_name && description && instructor) {
-        courses.push({ id: course_id, name: course_name, description, instructor });
-        res.redirect('/view-courses');
-    } else {
-        res.status(400).send('All fields are required.');
+app.post('/sign-up', async (req, res) => {
+  const { full_name, email, password, role } = req.body;
+  try {
+    if (!['teacher', 'student'].includes(role)) {
+      req.flash('error', 'Invalid role selected.');
+      return res.redirect('/sign-up');
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      fullName: full_name,
+      email,
+      password: hashedPassword,
+      role, // Make sure this is coming from the form
+      courses: [],
+    });
+    await newUser.save();
+    req.login(newUser, (err) => {
+      if (err) {
+        req.flash('error', 'There was an error logging you in.');
+        return res.redirect('/login');
+      }
+      return res.redirect('/');
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Error during sign-up. Please try again.');
+    res.redirect('/sign-up');
+  }
 });
 
-// Edit course page (pre-filling form)
-app.get('/edit-course/:id', (req, res) => {
-    const course = courses.find(c => c.id === req.params.id);
-    if (course) {
-        res.render('edit-course', { active: 'edit-course', course });
-    } else {
-        res.status(404).send('Course not found');
+// Login page
+app.get('/login', (req, res) => {
+  res.render('login', { active: 'login', messages: req.flash('error') });
+});
+
+// Handle login
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}));
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
     }
+    res.redirect('/');
+  });
 });
 
-
-// Handle editing a course
-app.post('/courses/edit/:id', (req, res) => {
-    const { courseName, courseDescription, courseInstructor, courseCredits } = req.body;
-    const course = courses.find(c => c.id === req.params.id);
-    
-    if (course) {
-        course.name = courseName;
-        course.description = courseDescription;
-        course.instructor = courseInstructor;
-        course.credits = courseCredits; // Update credits here
-
-        res.redirect('/view-courses'); // Redirect to the course list after updating
-    } else {
-        res.status(404).send('Course not found');
-    }
-});
-
-
-// Handle deleting a course
-app.post('/delete-course/:id', (req, res) => {
-    const courseId = req.params.id;
-    const courseIndex = courses.findIndex(c => c.id === courseId);
-    if (courseIndex !== -1) {
-        // Remove the course from the array
-        courses.splice(courseIndex, 1);
-        // Redirect to view courses page
-        res.redirect('/view-courses');
-    } else {
-        res.status(404).send('Course not found');
-    }
-});
-
-
-// Route to show details for a specific course
-app.get('/course/:id', (req, res) => {
-    const courseId = req.params.id;
-    const course = courses.find(c => c.id === courseId);
-    if (course) {
-        res.render('course-details', { active: 'course-details', course });
-    } else {
-        res.status(404).send('Course not found');
-    }
-});
-
-// 404 page
-app.use((req, res) => {
-    res.status(404).send('Page not found');
-});
-
-// Start the server
+// Start server
 app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <%- include('partials/_navbar.ejs') %>
+
+    <section class="container">
+        <h1>Edit Your Profile</h1>
+        <form action="/edit-profile" method="POST">
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" name="full_name" value="<%= user ? user.fullName : '' %>" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= user ? user.email : '' %>" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" minlength="6" placeholder="Leave blank to keep current password">
+
+            <label for="role">Role</label>
+            <select name="role" id="role" required>
+                <option value="teacher" <%= user && user.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
+                <option value="student" <%= user && user.role === 'student' ? 'selected' : '' %>>Student</option>
+            </select>
+
+            <button type="submit" class="cta-button">Update Account</button>
+        </form>
+    </section>
+
+    <%- include('partials/_footer.ejs') %>
+</body>
+</html>

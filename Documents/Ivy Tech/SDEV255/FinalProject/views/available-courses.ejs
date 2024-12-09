@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Courses</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <%- include('partials/_navbar.ejs') %>
+
+    <div class="container">
+        <h1>Available Courses</h1>
+        <div class="course-list">
+            <% availableCourses.forEach(course => { %>
+                <div class="course">
+                    <h3><%= course.name %> (<%= course.id %>)</h3>
+                    <p><%= course.description %></p>
+
+                    <!-- Only allow students to add the course -->
+                    <% if (user && user.role === 'student') { %>
+                        <form action="/add-course" method="POST">
+                            <input type="hidden" name="courseId" value="<%= course.id %>">
+                            <button type="submit">Add to My Courses</button>
+                        </form>
+                    <% } else { %>
+                        <p>You must be logged in as a student to add courses.</p>
+                    <% } %>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+</body>
+</html>
