@@ -119,9 +119,18 @@ function isAuthenticated(req, res, next) {
 }
 
 // Home page
-app.get('/', isAuthenticated, async (req, res) => {
-  const availableCourses = await Course.find(); 
-  res.render('index', { active: 'home', availableCourses, user: req.user });
+app.get('/', async (req, res) => {
+  try {
+    const availableCourses = await Course.find();
+    res.render('index', { 
+      active: 'home', 
+      availableCourses, 
+      user: req.user 
+    });
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).send('Error loading homepage');
+  }
 });
 
 // Route to render available courses
@@ -147,7 +156,7 @@ app.get('/view-courses', isAuthenticated, async (req, res) => {
 });
 
 // Route to view course details
-app.get('/course/:id', isAuthenticated, async (req, res) => {
+app.get('/course/:id', async (req, res) => {
   const courseId = req.params.id;
   try {
     const course = await Course.findOne({ id: courseId });
