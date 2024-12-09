@@ -1,6 +1,6 @@
 /* General Styles */
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -25,7 +25,7 @@ nav {
     font-size: 1.8em;
     color: #ffffff;
     font-weight: bold;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
 }
 
 .navbar-links a {
@@ -52,7 +52,7 @@ nav {
 .hero h1 {
     font-size: 2.5em;
     margin: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
 }
 
 .hero p {
@@ -80,7 +80,7 @@ nav {
 .card h3 {
     font-size: 1.8em;
     margin-bottom: 10px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
 }
 
 .card p {
@@ -116,7 +116,7 @@ form label {
     font-size: 1.1em;
     margin-bottom: 10px;
     display: block;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
 }
 
 form input, form textarea {
@@ -155,7 +155,7 @@ footer {
 
 footer p {
     font-size: 1em;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* System font stack */
 }
 
 /* Error message styles */
@@ -180,5 +180,6 @@ footer p {
         margin: 10px;
     }
 }
+
 
 
